@@ -15,146 +15,141 @@ Last Edit 2020/8/24
 #include "game.h"
 #include "files.h"
 
-int levelNumber = 1;
 void play(SDL_Surface *screen)
 {
-	while (levelNumber < 10)
+	SDL_Surface *mario[4] = {NULL}; // 4 surface for the 4 directions of mario
+	SDL_Surface *wall = NULL, *box = NULL, *boxOK = NULL,
+		*objective = NULL, *level = NULL, *currentMario = NULL;
+	SDL_Rect position, playerPosition;
+	SDL_Event event;
+	int cont = 1, remainingGoals = 0, i = 0, j = 0;
+	int map[NB_BLOCKS_WIDTH][NB_BLOCKS_HEIGHT] = {0}; // for the mapping 
+	
+	// Loading the sprites (Boxes, Player...)
+	wall = IMG_Load("imgs/wall.jpg");
+	box = IMG_Load("imgs/box.jpg");
+	boxOK = IMG_Load("imgs/box_ok.jpg");
+	level = IMG_Load("imgs/goal.png");
+	mario[DOWN] = IMG_Load("imgs/mario_f.gif");
+	mario[UP] = IMG_Load("imgs/mario_b.gif");
+	mario[RIGHT] = IMG_Load("imgs/mario_right.gif");
+	mario[LEFT] = IMG_Load("imgs/mario_left.gif");
+	currentMario = mario[DOWN];
+
+	// Loading the level
+	if (!(loadLevel(map)))
+		exit(EXIT_FAILURE); // we stop the game if we couldn't load the level
+
+	// We search for the position of Mario in the begining of the game
+	for (i = 0; i < NB_BLOCKS_WIDTH; ++i)
 	{
-		SDL_Surface *mario[4] = {NULL}; // 4 surface for the 4 directions of mario
-		SDL_Surface *wall = NULL, *box = NULL, *boxOK = NULL,
-			*objective = NULL, *level = NULL, *currentMario = NULL;
-		SDL_Rect position, playerPosition;
-		SDL_Event event;
-		int cont = 1, remainingGoals = 0, i = 0, j = 0;
-		int map[NB_BLOCKS_WIDTH][NB_BLOCKS_HEIGHT] = {0}; // for the mapping 
-		
-		// Loading the sprites (Boxes, Player...)
-		wall = IMG_Load("imgs/wall.jpg");
-		box = IMG_Load("imgs/box.jpg");
-		boxOK = IMG_Load("imgs/box_ok.jpg");
-		level = IMG_Load("imgs/goal.png");
-		mario[DOWN] = IMG_Load("imgs/mario_f.gif");
-		mario[UP] = IMG_Load("imgs/mario_b.gif");
-		mario[RIGHT] = IMG_Load("imgs/mario_right.gif");
-		mario[LEFT] = IMG_Load("imgs/mario_left.gif");
-		currentMario = mario[DOWN];
+		for (j = 0; j < NB_BLOCKS_HEIGHT; ++j)
+		{
+			if (map[i][j] == MARIO)
+			{
+				playerPosition.x = i;
+				playerPosition.y = j;
+				map[i][j] = EMPTY;
+			}
+		}
+	}
 
-		// Loading the level
-		if (!(loadLevel(map, levelNumber)))
-			exit(EXIT_FAILURE); // we stop the game if we couldn't load the level
+	// Enabling keys repetition
+	SDL_EnableKeyRepeat(100, 100);
 
-		// We search for the position of Mario in the begining of the game
+	// The main loop
+	while (cont)
+	{
+		SDL_WaitEvent(&event);
+		switch (event.type)
+		{
+			case SDL_QUIT:
+			cont = 0;
+			break;
+
+			case SDL_KEYDOWN:
+			switch(event.key.keysym.sym)
+			{
+				case SDLK_ESCAPE:
+				cont = 0;
+				break;
+
+				case SDLK_UP:
+				currentMario = mario[UP];
+				movePlayer(map, &playerPosition, UP);
+				break;
+
+				case SDLK_DOWN:
+				currentMario = mario[DOWN];
+				movePlayer(map, &playerPosition, DOWN);
+				break;
+
+				case SDLK_RIGHT:
+				currentMario = mario[RIGHT];
+				movePlayer(map, &playerPosition, RIGHT);
+				break;
+
+				case SDLK_LEFT:
+				currentMario = mario[LEFT];
+				movePlayer(map, &playerPosition, LEFT);
+				break;
+			}
+			break;
+		}
+
+		// Cleaning the screen
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255));
+
+		// Placing the objects on screen
+		remainingGoals = 0;
 		for (i = 0; i < NB_BLOCKS_WIDTH; ++i)
 		{
 			for (j = 0; j < NB_BLOCKS_HEIGHT; ++j)
 			{
-				if (map[i][j] == MARIO)
+				position.x = i * BLOCK_SIZE;
+				position.y = j * BLOCK_SIZE;
+				switch (map[i][j])
 				{
-					playerPosition.x = i;
-					playerPosition.y = j;
-					map[i][j] = EMPTY;
+					case WALL:
+					SDL_BlitSurface(wall, NULL, screen, &position);
+					break;
+					case BOX:
+					SDL_BlitSurface(box, NULL, screen, &position);
+					break;
+					case BOX_OK:
+					SDL_BlitSurface(boxOK, NULL, screen, &position);
+					break;
+					case GOAL:
+					SDL_BlitSurface(level, NULL, screen, &position);
+					remainingGoals = 1;
+					break;
 				}
 			}
 		}
-
-		// Enabling keys repetition
-		SDL_EnableKeyRepeat(100, 100);
-
-		// The main loop
-		while (cont)
+		if (!remainingGoals)
 		{
-			SDL_WaitEvent(&event);
-			switch (event.type)
-			{
-				case SDL_QUIT:
-				cont = 0;
-				break;
-
-				case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-					cont = 0;
-					break;
-
-					case SDLK_UP:
-					currentMario = mario[UP];
-					movePlayer(map, &playerPosition, UP);
-					break;
-
-					case SDLK_DOWN:
-					currentMario = mario[DOWN];
-					movePlayer(map, &playerPosition, DOWN);
-					break;
-
-					case SDLK_RIGHT:
-					currentMario = mario[RIGHT];
-					movePlayer(map, &playerPosition, RIGHT);
-					break;
-
-					case SDLK_LEFT:
-					currentMario = mario[LEFT];
-					movePlayer(map, &playerPosition, LEFT);
-					break;
-				}
-				break;
-			}
-
-			// Cleaning the screen
-			SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255));
-
-			// Placing the objects on screen
-			remainingGoals = 0;
-			for (i = 0; i < NB_BLOCKS_WIDTH; ++i)
-			{
-				for (j = 0; j < NB_BLOCKS_HEIGHT; ++j)
-				{
-					position.x = i * BLOCK_SIZE;
-					position.y = j * BLOCK_SIZE;
-					switch (map[i][j])
-					{
-						case WALL:
-						SDL_BlitSurface(wall, NULL, screen, &position);
-						break;
-						case BOX:
-						SDL_BlitSurface(box, NULL, screen, &position);
-						break;
-						case BOX_OK:
-						SDL_BlitSurface(boxOK, NULL, screen, &position);
-						break;
-						case GOAL:
-						SDL_BlitSurface(level, NULL, screen, &position);
-						remainingGoals = 1;
-						break;
-					}
-				}
-			}
-			if (!remainingGoals)
-			{
-				cont = 0;
-			}
-
-			// We place the player in the right position
-			position.x = playerPosition.x * BLOCK_SIZE;
-			position.y = playerPosition.y * BLOCK_SIZE;
-			SDL_BlitSurface(currentMario, NULL, screen, &position);
-
-			// Refresh the screen for the player
-			SDL_Flip(screen);
+			cont = 0;
 		}
 
-		// Disabling keys repetiton (reset to 0)
-		SDL_EnableKeyRepeat(0, 0);
+		// We place the player in the right position
+		position.x = playerPosition.x * BLOCK_SIZE;
+		position.y = playerPosition.y * BLOCK_SIZE;
+		SDL_BlitSurface(currentMario, NULL, screen, &position);
 
-		// Freeing the used surfaces
-		SDL_FreeSurface(wall);
-		SDL_FreeSurface(box);
-		SDL_FreeSurface(boxOK);
-		SDL_FreeSurface(level);
-		for (int i = 0; i < 4; ++i)
-			SDL_FreeSurface(mario[i]);
-		levelNumber += 1;
+		// Refresh the screen for the player
+		SDL_Flip(screen);
 	}
+
+	// Disabling keys repetiton (reset to 0)
+	SDL_EnableKeyRepeat(0, 0);
+
+	// Freeing the used surfaces
+	SDL_FreeSurface(wall);
+	SDL_FreeSurface(box);
+	SDL_FreeSurface(boxOK);
+	SDL_FreeSurface(level);
+	for (int i = 0; i < 4; ++i)
+		SDL_FreeSurface(mario[i]);
 }
 
 void movePlayer(int map[][NB_BLOCKS_HEIGHT], SDL_Rect *pos, int direction)

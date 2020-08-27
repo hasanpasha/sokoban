@@ -14,7 +14,7 @@ Last Edit 2020/8/24
 #include "files.h"
 #include "constants.h"
 
-int loadLevel(int level[][NB_BLOCKS_HEIGHT], int levelNumber)
+int loadLevel(int level[][NB_BLOCKS_HEIGHT])
 {
 	FILE *file = NULL;
 	char fileLine[NB_BLOCKS_WIDTH * NB_BLOCKS_HEIGHT + 1] = {};
@@ -22,13 +22,8 @@ int loadLevel(int level[][NB_BLOCKS_HEIGHT], int levelNumber)
 	file = fopen("levels.lvl", "r");
 	if (file == NULL)
 		return 0;
-	for ( i = 0; i < 10; ++i)
-	{
-		fgets(fileLine, NB_BLOCKS_WIDTH * NB_BLOCKS_HEIGHT + 1, file);
-		if (i == levelNumber)
-			break;
-	}
-	// fgets(fileLine, NB_BLOCKS_WIDTH * NB_BLOCKS_HEIGHT + 1, file);
+	
+	fgets(fileLine, NB_BLOCKS_WIDTH * NB_BLOCKS_HEIGHT + 1, file);
 	for (i = 0; i < NB_BLOCKS_WIDTH; ++i)
 	{
 		for (j = 0; j < NB_BLOCKS_HEIGHT; ++j)
