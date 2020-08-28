@@ -86,13 +86,9 @@ void editor(SDL_Surface *screen)
 			break;
 
 			case SDL_KEYDOWN:
-			show += 1;
-			if (show == 1)
-			{
-				if (!loadLevel(map))
-					exit(EXIT_FAILURE);	
-			}
-
+			if (!loadLevel(map))
+				exit(EXIT_FAILURE);
+			show = 1;
 			switch (event.key.keysym.sym)
 			{
 				case SDLK_ESCAPE:
@@ -118,16 +114,16 @@ void editor(SDL_Surface *screen)
 					break;
 
 				case SDLK_3:
-					currentObject = BOX_OK;
-					view = IMG_Load("imgs/box_ok.jpg");
-					break;
-
-				case SDLK_4:
 					currentObject = GOAL;
 					view = IMG_Load("imgs/goal.png");
 					break;
 
-				case SDLK_5:
+				case SDLK_4:
+				// 	currentObject = BOX_OK;
+				// 	view = IMG_Load("imgs/box_ok.jpg");
+				// 	break;
+
+				// case SDLK_5:
 					currentObject = MARIO;
 					view = IMG_Load("imgs/mario_f.gif");
 					break;
@@ -156,9 +152,9 @@ void editor(SDL_Surface *screen)
 					case BOX:
 					SDL_BlitSurface(box, NULL, screen, &position);
 					break;
-					case BOX_OK:
-					SDL_BlitSurface(boxOK, NULL, screen, &position);
-					break;
+					// case BOX_OK:
+					// SDL_BlitSurface(boxOK, NULL, screen, &position);
+					// break;
 					case GOAL:
 					SDL_BlitSurface(level, NULL, screen, &position);
 					break;

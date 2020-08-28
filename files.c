@@ -49,6 +49,10 @@ int loadLevel(int level[][NB_BLOCKS_HEIGHT])
 				case '4':
 				level[j][i] = 4;
 				break;
+
+				case '5':
+				level[j][i] = 5;
+				break;
 			}
 		}
 	}
@@ -63,6 +67,7 @@ int saveLevel(int level[][NB_BLOCKS_HEIGHT])
 	file = fopen("levels.lvl", "w");
 	if (file == NULL)
 		return 0;
+
 	for (i = 0; i < NB_BLOCKS_WIDTH; i++)
 	{
 		for (j = 0; j < NB_BLOCKS_HEIGHT; j++)
@@ -70,6 +75,7 @@ int saveLevel(int level[][NB_BLOCKS_HEIGHT])
 			fprintf(file, "%d", level[j][i]);
 		}
 	}
+	printf("Saved!\n");
 	fclose(file);
 	return 1;
 }
