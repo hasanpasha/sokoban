@@ -3,11 +3,18 @@
 
 # How to install it 
 
-# First:
+# First download the source 
+	$ git clone https://github.com/hasanpasha/sokoban
+
+# then
+	# Change the directory to sokoban
+	$ cd sokoban
+	# Now make the executable files
 	$ make
-# Second:
+	# The last step is to cpoy it to /usr/local/bin, to make it available
+	# by all users
 	$ sudo make install 
-	# The executable file whill coppied to /usr/local/bin
+
 
 # For uninstalling
 	$ sudo make uninstall

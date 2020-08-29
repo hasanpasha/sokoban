@@ -12,6 +12,7 @@ Last Edit 2020/8/24
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include "editor.h"
+#include "files.h"
 #include "constants.h"
 
 void editor(SDL_Surface *screen)
