@@ -4,8 +4,7 @@ exec=sokoban
 cc=gcc
 libs=`pkg-config --libs sdl SDL_image`
 cflags=`pkg-config --cflags sdl SDL_image`
-des=/usr/local/bin
-loc=${PWD}
+
 ${exec} : main.o game.o editor.o files.o
 	${cc} -o ${exec} main.o game.o editor.o files.o ${libs} ${cflags}
 
@@ -20,9 +19,3 @@ files.o : files.c constants.h files.h
 
 clean : 
 	rm sokoban main.o game.o editor.o files.o
-
-install : 
-	cp -rf ${exec} ${des}
-
-uninstall : 
-	rm -f ${des}/${exec}
